@@ -15,6 +15,9 @@ This ledger maps the canonical Skill source to its GitHub and Xiaohongshu SkillH
 - Existing SkillHub `skill_id`: `8647`
 - Submission result: `SUBMIT_REJECTED` (`Skill ID 已被占用`)
 - Attempted SkillHub bundle SHA-256: `096258261f21c2cf2a382a28e348ce44796c1a0b71aebffac020ed11fe8f0ca2`
+- Retry result after reinstalling the official package from `https://redskill.xiaohongshu.net/uploader.md`: `SUBMIT_REJECTED` (`Skill ID 已被占用`)
+- Retry bundle SHA-256: `4a4251bd23e24862aaf1b0cc1a2215d7fdd6f4898d7ebee0d6888425d23d7f89`
+- Official uploader version after reinstall: `@xhs/skillhub-upload 0.1.1`; its submit payload has `skill_identifier` but no existing `skill_id` / update-mode field
 - Canonical source fingerprint: `f28f84f02bc4854580854afdcc56b71eb3ae4bd1552a1eaf9d4d753ff06332a2`
 - Retry condition: use an official SkillHub CLI or documented flow that supports adding a version to the existing `skill_id=8647`; do not create a second identifier
 
