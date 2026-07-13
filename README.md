@@ -270,6 +270,8 @@ All scripts return JSON so compatible AI agents can reliably read IDs and contin
 .
 ├── README.md                  # Default English GitHub guide
 ├── README.zh-CN.md            # Complete Simplified Chinese guide
+├── PUBLISHING.md              # GitHub + SkillHub release contract
+├── RELEASES.md                # Cross-channel release receipt ledger
 ├── SECURITY.md                # Credential and vulnerability reporting policy
 ├── install.py                 # Cross-client installer
 ├── dida-task-assistant/       # Canonical portable Agent Skill
@@ -279,9 +281,13 @@ All scripts return JSON so compatible AI agents can reliably read IDs and contin
 └── tests/                     # Regression tests that do not access a real account
 ```
 
+## Release parity
+
+`VERSION` is the single version authority. Every release must use the same version and the same canonical `dida-task-assistant/` source on GitHub and Xiaohongshu SkillHub. See [PUBLISHING.md](PUBLISHING.md) for the mandatory process and [RELEASES.md](RELEASES.md) for receipts and source fingerprints.
+
 ## Design boundaries and roadmap
 
-- v0.1: local-first records, Dida365 OAuth, and core task/project operations.
+- v1.0: local-first records, Dida365 OAuth, core task/project operations, and synchronized GitHub + SkillHub distribution.
 - Future connectors may include Feishu or Todoist. They should reuse the local record format rather than replace it.
 - Automatically syncing every local note is not a planned default; sync follows user intent.
 - The repository will never host a user's OAuth app credentials or access tokens.

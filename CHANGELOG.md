@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0 - 2026-07-13
+
+- Aligned GitHub and Xiaohongshu SkillHub on the same `1.0.0` release version.
+- Added a hard cross-channel publishing contract, release ledger, and automated canonical-source preflight.
+- Established `VERSION` as the only version authority and prohibited implicit SkillHub CLI version defaults.
+
 ## 0.1.3 - 2026-07-13
 
 - Removed optional Codex-only UI metadata from the canonical Skill package for SkillHub compatibility.
