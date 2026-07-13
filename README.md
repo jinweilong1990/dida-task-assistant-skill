@@ -1,25 +1,27 @@
 # Dida Task Assistant
 
-> 用自然语言收集任务、提醒、已完成事项和产品想法：先留下本地记录，再把需要执行的事项同步到滴答清单（Dida365）。
+**English** | [简体中文](README.zh-CN.md)
 
-**由 [森木（Senmu）](https://github.com/jinweilong1990) 制作并维护。** 这是一个公开源代码、允许非商业使用的 Agent Skill；[GitHub 仓库](https://github.com/jinweilong1990/dida-task-assistant-skill)同时作为安装源和问题反馈入口。
+> Capture tasks, reminders, completed work, and product ideas in natural language. Keep a local record first, then sync actionable items to Dida365 / TickTick.
 
-`dida-task-assistant` 不是只会“创建一条任务”的 API 包装器。它让 Codex、Claude Code 和其他兼容 Agent Skills 的本地 AI Agent 成为一个本地优先的任务与想法收集助手：理解口语化输入、提炼标题和少量标签、判断是否真的需要待办化，并在本地留下可追溯记录。
+**Created and maintained by [Senmu](https://github.com/jinweilong1990).** This is a source-available Agent Skill for noncommercial use. The [GitHub repository](https://github.com/jinweilong1990/dida-task-assistant-skill) is the installation source and issue tracker.
 
-## 它能做什么
+`dida-task-assistant` is more than an API wrapper that creates tasks. It turns Codex, Claude Code, and other compatible local Agent Skills clients into a local-first task and idea assistant. The current AI agent interprets conversational input, derives a concise title and a few useful tags, decides whether an item should become a task, and leaves a traceable local record.
 
-- 收集待办、提醒、灵感、背景笔记和已完成事项。
-- 由当前 AI Agent 根据上下文提炼标题、说明和不超过两个补充标签；用户指定的标签永远优先。
-- 先把每条输入保存到本地，再将明确需要行动的事项同步到滴答清单。
-- 为已同步任务写回本地 `task_id` 与清单 ID；滴答请求失败时保留 `pending` 本地记录，不丢想法。
-- 支持创建、查询、筛选、更新、完成、取消完成、删除任务，以及创建和列出清单。
-- 避免把每一句背景、偏好或复盘都误变成待办；不明确的机会默认保留为“灵感/待验证”。
+## What it can do
 
-## 5 分钟快速开始
+- Capture tasks, reminders, ideas, background notes, and completed work.
+- Let the current AI agent derive a title, description, and at most two additional tags while preserving user-specified tags.
+- Save every input locally before syncing explicit actions to Dida365.
+- Link returned `task_id` and project IDs to local records; preserve a `pending` record when remote sync fails.
+- Create, query, filter, update, complete, reopen, and delete tasks, and create or list projects.
+- Keep preferences, reflections, and early ideas out of the task list unless the user asks for action.
 
-下面以 Codex 为例；Claude Code 和其他客户端的完整安装命令见[安装教程](#安装教程)。
+## Five-minute quick start
 
-### 1. 下载并安装
+The example below uses Codex. See the [installation guide](#installation-guide) for Claude Code and other clients.
+
+### 1. Download and install
 
 ```bash
 git clone https://github.com/jinweilong1990/dida-task-assistant-skill.git
@@ -27,19 +29,19 @@ cd dida-task-assistant-skill
 python3 install.py --target codex
 ```
 
-安装完成后，让 Codex 重新扫描 Skills，或重新打开一个任务。
+After installation, let Codex rescan Skills or start a new task.
 
-### 2. 直接对 AI 说
+### 2. Ask the AI naturally
 
 ```text
-使用 $dida-task-assistant，帮我记一下：明天下午三点给供应商回电话，标签是工作、重要。
+Use $dida-task-assistant to remind me to call the supplier tomorrow at 3 PM. Tag it Work and Important.
 ```
 
-第一次使用时，AI 会先检查是否已经连接滴答。如果尚未配置，它应该给出滴答开发者中心链接，并指导你使用自己的 Client ID 和 Client Secret。
+On first use, the AI checks whether Dida365 is connected. If it is not configured, the AI should provide the developer-center link and guide you through creating your own Client ID and Client Secret.
 
-### 3. 完成第一次连接
+### 3. Complete the first connection
 
-不要把 Client Secret 直接发到聊天里。请在安装后的 Skill 目录中运行配置程序：
+Do not paste your Client Secret into chat. Run the configuration tools from the installed Skill directory:
 
 ```bash
 cd ~/.codex/skills/dida-task-assistant
@@ -47,260 +49,261 @@ python3 scripts/configure.py
 python3 scripts/auth.py
 ```
 
-`configure.py` 会在终端询问 Client ID，并隐藏输入 Client Secret；`auth.py` 会打开浏览器，让你登录自己的滴答账号并授权。完成后重新发送刚才的任务即可。
+`configure.py` asks for the Client ID and accepts the Client Secret through hidden terminal input. `auth.py` opens a browser so you can sign in to your own Dida365 account and grant access. After authorization, send the original request again.
 
-## 怎么向它提问
+## How to talk to it
 
-不需要学习固定命令。你可以像对助理说话一样描述事情，也可以显式写出 `$dida-task-assistant`，帮助客户端准确调用本 Skill。
+You do not need to memorize CLI commands. Describe the outcome as you would to an assistant. Explicitly mentioning `$dida-task-assistant` can help a client select the Skill reliably.
 
-| 你的目的 | 可以这样说 | Skill 应该怎么处理 |
+| Goal | Example prompt | Expected behavior |
 | --- | --- | --- |
-| 新建待办 | “明天下午三点提醒我给供应商回电话，标签工作、重要。” | 本地留档，并同步为滴答任务和提醒 |
-| 记录灵感 | “我想到一个自动整理口播视频的工具，先记下来，不要建待办。” | 只保存为本地灵感 |
-| 拆解任务 | “把准备新品发布拆成确认素材、定价、上架和投放四步。” | 创建任务并生成检查项或子任务 |
-| 修改任务 | “把给供应商回电话改到周五上午十点。” | 查找明确目标后更新滴答任务 |
-| 查询清单 | “看看我滴答里这周还有哪些工作任务。” | 查询已授权账号中的相关任务 |
-| 记录完成 | “产品说明书已经发给客户了，帮我记为完成。” | 默认留下本地完成记录；需要时更新对应滴答任务 |
-| 整理想法 | “总结一下我最近记录的产品想法，哪些值得先验证？” | 读取本地记录并由当前 AI Agent 总结、归类 |
-| 只记本地 | “这句话只存本地，不要同步滴答。” | 明确保留在本地，不访问滴答 |
+| Create a task | “Remind me to call the supplier tomorrow at 3 PM. Tag it Work and Important.” | Save locally, then create a Dida365 task and reminder |
+| Capture an idea | “Save an idea for a tool that edits talking-head videos automatically. Do not make it a task yet.” | Store it as a local idea only |
+| Break down work | “Break ‘prepare the product launch’ into assets, pricing, listing, and advertising.” | Create a task with checklist items or subtasks |
+| Update a task | “Move the supplier call to Friday at 10 AM.” | Find the unambiguous task and update it |
+| Query tasks | “What work tasks are still due this week?” | Query relevant tasks in the authorized account |
+| Record completion | “The product manual has been sent to the customer. Record it as completed.” | Create a local completion record and update the matching remote task when appropriate |
+| Review ideas | “Summarize my recent product ideas and suggest which ones to validate first.” | Read local records and let the current AI agent summarize and classify them |
+| Keep it local | “Save this locally only. Do not sync it to Dida365.” | Keep a local record without accessing Dida365 |
 
-如果涉及完成、删除、移动任务，而你的描述无法唯一确认目标，AI 应先向你确认，而不是猜测。
+For destructive or state-changing actions such as completing, deleting, or moving a task, the AI should ask for clarification when the target is ambiguous.
 
-## 常见应用场景
+## Common use cases
 
-### 1. 随口收集待办
+### 1. Capture a task while talking
 
-把聊天中的“记得做某事”直接变成带日期、提醒和标签的任务，不必切换到滴答手工录入。
+Turn “remember to do this” into a dated and tagged task without switching to Dida365 for manual entry.
 
-### 2. 收集产品想法和灵感
+### 2. Build an idea and product-opportunity inbox
 
-先把还不成熟的想法保存在本地灵感池，避免每个想法都变成高优先级待办；等想法明确后，再让 AI 转为验证任务。
+Keep early ideas in a local idea pool instead of turning every thought into an urgent task. Convert an idea into a low-priority validation task only when it becomes actionable.
 
-### 3. 把模糊目标拆成行动步骤
+### 3. Turn a vague goal into steps
 
-例如把“准备新品发布”拆成素材、定价、上架和投放检查项，再同步到滴答执行。
+Ask the AI to break “prepare the product launch” into assets, pricing, listing, and advertising, then sync the actionable checklist to Dida365.
 
-### 4. 记录已经完成的工作
+### 4. Keep a record of completed work
 
-把零散的完成事项留下本地记录，便于以后复盘。只有你明确需要时，才在滴答中创建完成日志或完成已有任务。
+Capture small completed actions for later review. The Skill only creates a remote completion log or completes an existing task when the user requests it or the target is clear.
 
-### 5. 查询和维护现有任务
+### 5. Query and maintain existing tasks
 
-使用自然语言查询清单、筛选任务、修改日期、添加子任务、完成或取消完成，而不需要记住 API 参数。
+Use natural language to inspect projects, filter tasks, change dates, add subtasks, complete tasks, or reopen them without remembering API parameters.
 
-### 6. 即使暂时不用滴答，也先留下记录
+### 6. Keep capturing even without Dida365
 
-本地记录不依赖滴答授权。网络失败、授权失效或以后更换连接器时，原始想法和同步状态仍然保留在用户自己的电脑上。
+Local capture does not require OAuth. If the network fails, authorization expires, or you later add another connector, the original thought and its sync state remain on your computer.
 
-## 它如何决定保存在哪里
+## How it decides where to save
 
-| 输入类型 | 本地记录 | 同步到滴答 |
+| Input type | Local record | Sync to Dida365 |
 | --- | --- | --- |
-| 明确的未来行动 | 是 | 是 |
-| 带时间的提醒 | 是 | 是 |
-| 灵感、偏好、背景资料 | 是 | 默认否 |
-| 已完成事项 | 是 | 仅在用户要求或存在明确对应任务时 |
-| 含义不明确的内容 | 是 | 先确认，不擅自同步 |
+| Clear future action | Yes | Yes |
+| Time-based reminder | Yes | Yes |
+| Idea, preference, or background information | Yes | No by default |
+| Completed work | Yes | Only when requested or tied to a clear existing task |
+| Ambiguous input | Yes | Clarify first; do not sync by guesswork |
 
-你可以随时覆盖默认判断，例如说“只存本地”“也同步到滴答”“先别建待办”。
+You can always override the default with phrases such as “local only,” “also sync this to Dida365,” or “do not create a task yet.”
 
-## 这不是一个独立后台 Agent
+## This is not a background agent
 
-理解、分类、去重建议和标签建议由 **当前 AI Agent + `SKILL.md` 的工作流**完成。`agents/openai.yaml` 只是 Codex 的可选界面元数据；Claude Code 和其他客户端可以忽略它，它不会启动一个常驻机器人。
+Interpretation, classification, duplicate suggestions, and tag suggestions come from the **current AI agent plus the workflow in `SKILL.md`**. `agents/openai.yaml` is optional Codex UI metadata. Claude Code and other clients can ignore it; it does not launch a persistent bot.
 
-脚本负责两类确定性工作：本地留档与滴答 Open API 调用。这种分工让 Skill 能自然理解中文口语，又不会把用户的记录只困在某一个第三方平台。
+The bundled scripts perform two deterministic jobs: local record storage and Dida365 Open API calls. This division provides natural-language understanding without locking the user's records into one third-party service.
 
-## 数据流
+## Data flow
 
 ```text
-用户口语输入
-      |
-      v
-AI Agent 理解、归类、提炼标题/标签
-      |
-      +--> 本地记录（必做，先执行）
-      |
-      +--> 明确待办/提醒 --> Dida365（可选同步）
-                                   |
-                                   v
-                         task_id 写回本地记录
+Conversational input
+        |
+        v
+AI agent interprets, classifies, and derives title/tags
+        |
+        +--> Local record (always first)
+        |
+        +--> Explicit task/reminder --> Dida365 (optional sync)
+                                              |
+                                              v
+                                  Link task_id locally
 ```
 
-本地记录是这版 Skill 的“收集底座”；滴答清单是第一个已实现的执行连接器。当前版本不是后台自动双向同步器：它不会擅自监听滴答，也不会自动把全部本地笔记推送出去。每次实际同步都由 Codex 在明确语境下发起，便于避免重复任务和误操作。
+The local record is the capture foundation; Dida365 is the first implemented execution connector. This release is not a background two-way sync service. It does not continuously monitor Dida365 or push every local note. Each sync is initiated by the AI in the context of an explicit request.
 
-## 跨客户端兼容
+## Cross-client compatibility
 
-仓库中只有一份标准 Skill：`dida-task-assistant/`。它遵循开放的 [Agent Skills specification](https://agentskills.io/specification)，核心入口只有 `SKILL.md`，并把脚本与按需参考资料放在标准的 `scripts/`、`references/` 目录。
+The repository contains one canonical Skill under `dida-task-assistant/`. It follows the [Agent Skills specification](https://agentskills.io/specification): `SKILL.md` is the entry point, with deterministic scripts and on-demand references in standard directories.
 
-| 客户端 | 用户级安装位置 | 安装命令 |
+| Client | User-level installation path | Command |
 | --- | --- | --- |
 | OpenAI Codex | `~/.codex/skills/dida-task-assistant/` | `python3 install.py --target codex` |
 | Claude Code | `~/.claude/skills/dida-task-assistant/` | `python3 install.py --target claude-code` |
-| 通用 Agent Skills 客户端 | 常见为 `~/.agents/skills/dida-task-assistant/`，以客户端文档为准 | `python3 install.py --target agents` 或自定义目录 |
+| Generic Agent Skills client | Commonly `~/.agents/skills/dida-task-assistant/`; follow client documentation | `python3 install.py --target agents` or use a custom destination |
 
-客户端必须允许 Skill 读取本地文件、运行 Python 3.10+ 脚本并访问 Dida365 网络接口。纯云端、没有本地 shell 或无法接收 localhost OAuth 回调的 Agent 即使能读取 `SKILL.md`，也无法完成当前连接流程。
+The client must allow local file access, Python 3.10+ script execution, network access to Dida365, and a localhost OAuth callback. A cloud-only agent without a local shell or callback support cannot complete the current OAuth flow even if it can read `SKILL.md`.
 
-## 安装教程
+## Installation guide
 
-克隆仓库后，选择自己的客户端；脚本只有 Python 标准库依赖。
+Clone the repository, then select one or more clients. The runtime uses only the Python standard library.
 
 ```bash
 git clone https://github.com/jinweilong1990/dida-task-assistant-skill.git
 cd dida-task-assistant-skill
 
-# 安装到一个客户端
+# Install into one client
 python3 install.py --target codex
 python3 install.py --target claude-code
 
-# 同时安装到 Codex、Claude Code 和通用 Agent Skills 目录
+# Install into Codex, Claude Code, and the generic Agent Skills directory
 python3 install.py --target all
 
-# 安装到其他客户端指定的 Skill 根目录
+# Install into another client's Skill root
 python3 install.py --target custom --dest /path/to/client/skills
 ```
 
-安装后，让客户端重新扫描 Skills。Codex 可以使用 `$dida-task-assistant`；Claude Code 可以让模型自动调用，或输入 `/dida-task-assistant`。
+After installation, let the client rescan Skills. In Codex, mention `$dida-task-assistant`. In Claude Code, let the model select the Skill or invoke `/dida-task-assistant`.
 
-### 与其他同类 Skill 共存
+### Coexisting with similar Skills
 
-公开版的 Skill 名称固定为 `dida-task-assistant`。安装器只会写入这个名称，不会修改、覆盖或迁移其他同类 Skill。更新公开版时，只有显式传入 `--force` 才会覆盖已安装的 `dida-task-assistant`。
+The public Skill name is fixed as `dida-task-assistant`. The installer writes only that directory and does not modify, overwrite, or migrate other similarly named Skills. Updating this public Skill requires an explicit `--force`.
 
-## 第一次连接滴答清单
+## First Dida365 connection
 
-每位使用者都必须使用**自己的** Client ID 和 Client Secret；不要使用仓库作者的凭据，也不要把任何凭据提交到 Git。
+Every user must use **their own Client ID and Client Secret**. Never use credentials from the repository author or commit credentials to Git.
 
-1. 打开 [滴答开发者中心](https://developer.dida365.com/)，登录并创建自己的应用。
-2. 在该应用的 OAuth redirect URL 中填写 `http://localhost:8080/callback`。
-3. 在 Skill 安装目录运行：
+1. Open the [Dida365 Developer Center](https://developer.dida365.com/), sign in, and create an application.
+2. Set its OAuth redirect URL to `http://localhost:8080/callback`.
+3. Run these commands from the installed Skill directory:
 
    ```bash
    python3 scripts/configure.py
    python3 scripts/auth.py
    ```
 
-4. 浏览器会打开滴答授权页。登录并同意后，回调会保存到当前用户电脑的私有配置目录。
+4. A browser opens the Dida365 authorization page. Sign in and approve access. The callback saves credentials to the current user's private configuration directory.
 
-首次调用 Skill 时，如果尚未配置，AI Agent 应主动提示上述步骤、给出开发者中心链接，并且不尝试创建远端任务。
+When the Skill is first invoked without configuration, the AI agent should provide these steps and the developer-center link, and it must not attempt a remote task operation.
 
-### 凭据与本地文件
+### Credentials and local files
 
-| 内容 | 保存位置 | 是否进入仓库 |
+| Content | Storage location | Committed to the repository? |
 | --- | --- | --- |
-| Client ID / Client Secret / OAuth Token | 用户配置目录，例如 macOS 的 `~/Library/Application Support/dida-task-assistant/config.json` | 否 |
-| 本地记录、同步状态和审计事件 | 用户数据目录，例如 macOS 的 `~/Library/Application Support/dida-task-assistant/` | 否 |
-| 示例配置和脚本 | 本仓库 | 可以，但绝不含真实值 |
+| Client ID, Client Secret, and OAuth tokens | User config directory, for example `~/Library/Application Support/dida-task-assistant/config.json` on macOS | No |
+| Local records, sync state, and audit events | User data directory, for example `~/Library/Application Support/dida-task-assistant/` on macOS | No |
+| Example code and scripts | This repository | Yes, but never with real values |
 
-本项目不收集或上传任务数据。所有 API 请求都从用户自己的电脑直接发往 Dida365。
+This project does not collect or upload task data. API requests go directly from the user's computer to Dida365.
 
-## 一次完整的使用演示
-
-```text
-用户：使用 $dida-task-assistant，帮我记一下：周三下午三点给供应商回电话，标记为工作、重要。
-```
-
-AI Agent 应完成以下过程：
-
-1. 判断这是一条明确的未来行动。
-2. 提炼标题“给供应商回电话”，保留时间和用户指定标签。
-3. 先创建本地记录并取得 `record_id`。
-4. 如果尚未配置滴答，暂停远端操作并指导用户完成 OAuth；本地记录不会丢失。
-5. 配置完成后创建滴答任务，并将返回的 `task_id` 和清单 ID 写回本地记录。
-6. 告诉用户任务保存到了哪里，以及是否同步成功。
-
-如果你说：
+## Complete walkthrough
 
 ```text
-我有个想法：以后做一个把口播视频自动整理成成片的小工具，只存本地，先别给我建待办。
+User: Use $dida-task-assistant to remind me to call the supplier Wednesday at 3 PM. Tag it Work and Important.
 ```
 
-AI Agent 应保存为本地灵感，不创建滴答任务。你以后可以继续说：
+The AI agent should:
+
+1. Classify the input as a clear future action.
+2. Derive the title “Call the supplier” while preserving the time and explicit tags.
+3. Create the local record first and read its `record_id`.
+4. If Dida365 is not configured, pause the remote step and guide the user through OAuth; the local record remains safe.
+5. After configuration, create the Dida365 task and link the returned `task_id` and project ID to the local record.
+6. Tell the user where the record was stored and whether remote sync succeeded.
+
+If the user says:
 
 ```text
-把刚才那个口播视频工具的想法变成一条“验证用户需求”的低优先级任务。
+I have an idea for a tool that automatically edits talking-head videos. Keep it local and do not create a task yet.
 ```
 
-AI Agent 再将这个想法转成可执行任务，并保留原始记录。
+The AI should save a local idea without creating a Dida365 task. The user can later say:
 
-## 常见问题
+```text
+Turn the talking-head video idea into a low-priority task to validate user demand.
+```
 
-### 安装后会立刻弹出 Client ID 配置吗？
+The AI then converts the idea into an actionable task while preserving the original record.
 
-当前安装器只负责安装，不会在安装结束时强制弹窗。第一次调用滴答能力时，AI 应先检查配置并给出教程。用户运行 `configure.py` 后在终端输入自己的 Client ID 和 Client Secret，再由 `auth.py` 打开浏览器授权。
+## FAQ
 
-### 会使用作者的 Client ID 或 Client Secret 吗？
+### Does installation immediately open a Client ID setup window?
 
-不会。仓库没有作者凭据，每位用户必须创建自己的滴答开发者应用。凭据保存在用户自己的私有配置目录，不进入 Skill 目录，也不进入 Git。
+No. The installer currently installs the Skill only. On the first Dida365 request, the AI should check configuration and provide the setup guide. The user enters their own Client ID and Client Secret through `configure.py`, and `auth.py` opens the browser authorization page.
 
-### 可以不连接滴答，只当本地想法收集器吗？
+### Does it use the author's Client ID or Client Secret?
 
-可以。本地记录功能不要求 OAuth。你可以明确说“只存本地，不要同步滴答”。
+No. The repository contains no author credentials. Every user creates their own Dida365 developer application. Credentials remain in the user's private configuration directory, outside the Skill folder and Git.
 
-### 它会在后台自动双向同步吗？
+### Can I use it as a local idea collector without Dida365?
 
-不会。当前版本不是常驻同步服务。AI 只会在明确的用户请求和当前对话中执行本地记录或滴答操作。
+Yes. Local records do not require OAuth. Say “keep this local” or “do not sync to Dida365.”
 
-### Client Secret 应该发给 AI 吗？
+### Does it run automatic background two-way sync?
 
-不应该。请在终端运行 `configure.py` 并使用隐藏输入。不要把 Client Secret、Token、真实任务数据贴到聊天、Issue、提交记录或截图中。
+No. This release is not a persistent sync service. The AI performs local or Dida365 operations only during an explicit request in the current conversation.
 
-## 本地命令
+### Should I send my Client Secret to the AI?
+
+No. Run `configure.py` in a terminal and use its hidden input. Never paste a Client Secret, token, real task data, or private local records into chat, issues, commits, or screenshots.
+
+## Local commands
 
 ```bash
-# 配置与 OAuth 授权
+# Configuration and OAuth
 python3 dida-task-assistant/scripts/configure.py
 python3 dida-task-assistant/scripts/auth.py
 
-# 本地优先记录（不访问滴答）
+# Local-first capture without Dida365
 python3 dida-task-assistant/scripts/memory.py capture \
-  --kind idea --title "验证口播视频精修工具" --tag 产品 --tag 灵感
+  --kind idea --title "Validate a talking-head video editing tool" --tag Product --tag Idea
 
-# 滴答任务操作
+# Dida365 task operations
 python3 dida-task-assistant/scripts/task.py project-list
-python3 dida-task-assistant/scripts/task.py create --title "给供应商回电话" \
-  --due-date 明天 --priority 5 --tag 工作
+python3 dida-task-assistant/scripts/task.py create --title "Call the supplier" \
+  --due-date tomorrow --priority 5 --tag Work
 ```
 
-所有脚本都输出 JSON，方便不同 AI Agent 读取并继续下一步。
+All scripts return JSON so compatible AI agents can reliably read IDs and continue the workflow.
 
-## 项目结构
+## Project structure
 
 ```text
 .
-├── README.md                  # GitHub 首页与使用说明
-├── SECURITY.md                # 凭据与漏洞报告规则
-├── install.py                 # Codex、Claude Code 与通用客户端安装器
-├── dida-task-assistant/       # 唯一、标准、可移植的 Agent Skill
-│   ├── SKILL.md               # 给兼容 AI Agent 的工作流
-│   ├── agents/openai.yaml     # Codex 可选界面元数据
-│   ├── references/            # OAuth 配置参考
-│   └── scripts/               # 本地记录、OAuth 与 Dida365 CLI
-└── tests/                     # 不访问真实滴答账号的回归测试
+├── README.md                  # Default English GitHub guide
+├── README.zh-CN.md            # Complete Simplified Chinese guide
+├── SECURITY.md                # Credential and vulnerability reporting policy
+├── install.py                 # Cross-client installer
+├── dida-task-assistant/       # Canonical portable Agent Skill
+│   ├── SKILL.md               # Workflow for compatible AI agents
+│   ├── agents/openai.yaml     # Optional Codex UI metadata
+│   ├── references/            # On-demand OAuth reference
+│   └── scripts/               # Local records, OAuth, and Dida365 CLI
+└── tests/                     # Regression tests that do not access a real account
 ```
 
-## 设计边界与路线图
+## Design boundaries and roadmap
 
-- v0.1：本地优先记录 + Dida365 OAuth + 基础任务和清单操作。
-- 后续可以增加飞书、Todoist 等连接器；它们应复用本地记录格式，而不是取代本地记录。
-- 不计划把“每条笔记都自动同步”作为默认行为；同步应以用户意图为准。
-- 不计划在仓库中托管任何用户的 OAuth 应用密钥或访问 Token。
-- 不为每个 Agent 维护分叉代码；所有客户端共享同一份标准 Skill，安装器只负责复制到对应目录。
+- v0.1: local-first records, Dida365 OAuth, and core task/project operations.
+- Future connectors may include Feishu or Todoist. They should reuse the local record format rather than replace it.
+- Automatically syncing every local note is not a planned default; sync follows user intent.
+- The repository will never host a user's OAuth app credentials or access tokens.
+- All compatible clients share one canonical Skill; the installer only copies it to each client directory.
 
-## 开发与测试
+## Development and testing
 
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
-运行测试不会连接真实滴答账号；本地记录测试会使用临时目录。
+Tests do not connect to a real Dida365 account. Local record tests use temporary directories.
 
-## 作者与许可
+## Author and license
 
-**Dida Task Assistant 由 [森木（Senmu）](https://github.com/jinweilong1990) 制作并维护。** 源代码与问题反馈入口位于 [GitHub 仓库](https://github.com/jinweilong1990/dida-task-assistant-skill)。
+**Dida Task Assistant is created and maintained by [Senmu](https://github.com/jinweilong1990).** Source code and issue tracking are available in the [GitHub repository](https://github.com/jinweilong1990/dida-task-assistant-skill).
 
-本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE)：
+The project uses the [PolyForm Noncommercial License 1.0.0](LICENSE):
 
-- 允许个人学习、研究、实验、爱好项目及其他非商业用途。
-- 允许在非商业目的下修改和再分发，但必须保留许可证及其中的 `Required Notice` 身份声明。
-- 公司业务、收费服务、商业产品、商业内部使用或其他预期商业应用，需要事先取得森木的书面商业授权。
+- Personal study, research, experiments, hobby projects, and other noncommercial purposes are permitted.
+- Modification and redistribution are permitted for noncommercial purposes, provided the license and its `Required Notice` are preserved.
+- Company operations, paid services, commercial products, internal commercial use, or other anticipated commercial applications require prior written commercial permission from Senmu.
 
-由于该许可限制商业用途，本项目属于 **source-available（公开源代码）**，不宣称为 OSI 定义下的 Open Source Software。提交 issue 或 PR 前，请先阅读 [SECURITY.md](SECURITY.md)：任何 Token、Client Secret、真实任务数据或本地记录都不应出现在 issue、提交或截图中。
+Because this license restricts commercial use, this project is **source-available** and does not claim to be Open Source Software under the OSI definition. Before opening an issue or pull request, read [SECURITY.md](SECURITY.md). Never include tokens, Client Secrets, real task data, or local records in issues, commits, or screenshots.

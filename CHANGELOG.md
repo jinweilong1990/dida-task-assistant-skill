@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 - 2026-07-13
+
+- Added complete English and Simplified Chinese project guides.
+- Made English the default GitHub README and added a prominent language switch to both versions.
+- Kept installation, OAuth safety, prompt recipes, use cases, walkthroughs, and licensing guidance aligned across languages.
+
 ## 0.1.1 - 2026-07-13
 
 - Reorganized the GitHub README around a five-minute first-use tutorial.
