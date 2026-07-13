@@ -29,7 +29,7 @@ class ReleasePreflightTests(unittest.TestCase):
 
         result = json.loads(completed.stdout)
         self.assertTrue(result["success"])
-        self.assertEqual(result["version"], "1.0.0")
+        self.assertEqual(result["version"], "1.0.1")
         self.assertEqual(result["skill_identifier"], "dida-task-assistant")
         self.assertRegex(result["source_fingerprint_sha256"], r"^[0-9a-f]{64}$")
 

@@ -8,6 +8,65 @@
 
 `dida-task-assistant` is more than an API wrapper that creates tasks. It turns Codex, Claude Code, and other compatible local Agent Skills clients into a local-first task and idea assistant. The current AI agent interprets conversational input, derives a concise title and a few useful tags, decides whether an item should become a task, and leaves a traceable local record.
 
+## Why this Skill exists
+
+I often have a large number of fragmented thoughts: something I need to do today, a product I may want to build later, or an idea that disappears as quickly as it arrives. Those thoughts used to be scattered across Feishu, Dida365, phone notes, and different chat windows. When I wanted to organize them, I often could not remember where I had written them—or that I had recorded them at all.
+
+The problem was not simply a missing note-taking app. Even though I was already comfortable with Dida365, capturing a thought still meant interrupting my work, opening another app, selecting a list, rewriting the thought as a title, and setting dates or reminders. The smaller and more spontaneous the idea, the more likely it was to be lost to that friction.
+
+In my own workflow, I later used WorkBuddy to configure a local AI / Claw-style entry point that could receive messages from WeChat. I could send text or voice, let the entry point pass it to an AI agent, and let this Skill decide whether it was a task, reminder, completion record, background note, or an idea that should not become a task yet. Actionable work could be organized into a title, tags, dates, and steps, recorded locally first, and then sent to the Dida365 workflow I already used every day.
+
+When Codex became my primary local agent, I installed the same Skill there. The entry point changed, but the capture model and data ownership did not. That is the central idea behind the project: **do not bind your thinking process to one chat entry point or one task platform. Keep a local capture foundation, then send actionable work to the platform you prefer.**
+
+The WeChat entry point, voice transcription, and WorkBuddy/Claw bridge are not bundled in this repository. They describe the author's own input workflow. This repository provides the portable Agent Skill, local record layer, and Dida365 connector.
+
+## The problem it is designed to solve
+
+- **Reduce capture friction:** speak or type naturally before deciding which app, list, or schema should receive the thought.
+- **Consolidate fragmented inputs:** tasks, reminders, completed work, ideas, and background notes enter one local record model instead of being scattered across tools.
+- **Separate ideas from commitments:** not every sentence becomes a task; the AI classifies the input and keeps ambiguous material local or asks for clarification.
+- **Decouple entry points from execution platforms:** use Codex, Claude Code, or another compatible local agent as the input; Dida365 is the first connector, and Feishu or Todoist connectors can be developed later.
+- **Keep ownership local:** records, sync state, and remote IDs remain on the user's computer. The project does not operate a centralized server that stores users' task data.
+
+## A real-world path
+
+```text
+WeChat text/voice, a Codex conversation, or another local agent entry point
+                                  |
+                                  v
+                       Current AI agent interprets input
+                                  |
+                 +----------------+----------------+
+                 |                |                |
+                 v                v                v
+            Clear task        Idea/context     Completed work
+         title/date/steps      local record     completion record
+                 |
+                 v
+          Write local record and sync state first
+                 |
+                 v
+   Sync to Dida365 when requested and link task_id locally
+```
+
+For example: “I just thought of a tool that could automatically organize talking-head videos. Save it for now.” The AI does not need to create an urgent task. It can keep the thought as a local idea. Later, the user can say, “Turn that video-tool idea into a three-step validation plan,” and the agent can create an actionable checklist and sync it to Dida365 when requested.
+
+## Current release versus the full vision
+
+| Capability | Current `1.0.1` | Notes |
+| --- | --- | --- |
+| Natural-language capture and classification | Available | The current AI agent and `SKILL.md` classify tasks, reminders, completions, ideas, and notes |
+| Titles, tags, dates, and step breakdown | Available | Supports checklists and subtasks; explicit user instructions take priority |
+| Duplicate detection | Conversational support | The agent can inspect relevant Dida365 lists and identify likely updates; this is not a deterministic global merge engine |
+| Local records and sync state | Available | Stores original intent, classification, remote IDs, and `local_only/pending/synced/failed` state |
+| Dida365 task operations | Available | Create, query, filter, update, complete, reopen, and delete tasks; create or list projects |
+| Codex, Claude Code, and generic-client installation | Available | The client must load Skills, run local Python, and support the OAuth callback |
+| WeChat bot or voice transcription | Not bundled | A host agent or WorkBuddy/Claw-style bridge must first turn messages or voice into agent input |
+| Feishu, Todoist, or other connectors | Not bundled yet | They can reuse the local record model, but require connector code, authorization, mapping, and tests |
+| Background automatic two-way sync | Not implemented | The release does not continuously monitor Dida365 or pull remote completions back into local records |
+
+The long-term direction is a portable local information foundation with connectors to the execution platforms each user prefers. A future two-way sync layer would need explicit triggers, conflict resolution, deduplication, and audit rules. The current release first makes the core path reliable: capture quickly, keep the thought, and sync deliberately.
+
 ## What it can do
 
 - Capture tasks, reminders, ideas, background notes, and completed work.
@@ -94,6 +153,10 @@ Use natural language to inspect projects, filter tasks, change dates, add subtas
 
 Local capture does not require OAuth. If the network fails, authorization expires, or you later add another connector, the original thought and its sync state remain on your computer.
 
+### 7. Capture through WeChat voice or another entry point
+
+If a WeChat bot, Claw-style entry point, or other host can transcribe voice and invoke a local Agent Skills-compatible AI agent, it can serve as the input layer. This Skill handles interpretation, local records, and Dida365 operations; the host system handles WeChat integration and speech-to-text.
+
 ## How it decides where to save
 
 | Input type | Local record | Sync to Dida365 |
@@ -141,6 +204,8 @@ The repository contains one canonical Skill under `dida-task-assistant/`. It fol
 | Generic Agent Skills client | Commonly `~/.agents/skills/dida-task-assistant/`; follow client documentation | `python3 install.py --target agents` or use a custom destination |
 
 The client must allow local file access, Python 3.10+ script execution, network access to Dida365, and a localhost OAuth callback. A cloud-only agent without a local shell or callback support cannot complete the current OAuth flow even if it can read `SKILL.md`.
+
+The Skill can therefore move between compatible local agent clients, but “Agent Skills compatible” does not mean every chatbot works with zero configuration. WeChat, voice, or other messaging entry points need a host bridge that passes their messages to a local agent capable of running this Skill.
 
 ## Installation guide
 
@@ -239,7 +304,15 @@ Yes. Local records do not require OAuth. Say “keep this local” or “do not 
 
 ### Does it run automatic background two-way sync?
 
-No. This release is not a persistent sync service. The AI performs local or Dida365 operations only during an explicit request in the current conversation.
+No. This release is not a persistent sync service. The AI performs local or Dida365 operations only during an explicit request in the current conversation. A task changed or completed directly in Dida365 is not continuously pulled back into local records; full two-way synchronization is a separate future capability.
+
+### Can I use it through WeChat voice?
+
+WeChat or voice can be an upstream input, but this repository does not include a WeChat bot, WorkBuddy/Claw configuration, or speech recognition. The host system must transcribe the voice and pass the text to a local AI agent with this Skill installed.
+
+### Can I replace Dida365 with Feishu, Todoist, or another platform?
+
+The architecture is extensible because local records and remote connectors are separated, but the current package only implements Dida365. Another platform requires its own API integration, authorization, field mapping, sync-state handling, and tests; changing one configuration value is not enough.
 
 ### Should I send my Client Secret to the AI?
 
@@ -288,7 +361,9 @@ All scripts return JSON so compatible AI agents can reliably read IDs and contin
 ## Design boundaries and roadmap
 
 - v1.0: local-first records, Dida365 OAuth, core task/project operations, and synchronized GitHub + SkillHub distribution.
-- Future connectors may include Feishu or Todoist. They should reuse the local record format rather than replace it.
+- Future connectors may include Feishu or Todoist. They should reuse the local record format rather than replace it, with connector-specific authorization, field mapping, and tests.
+- Explicit remote pull, reconciliation, and two-way synchronization may be added later; the project will not claim automatic two-way sync before conflict resolution, deduplication, and audit behavior exist.
+- WeChat, voice, and other messaging entry points belong to the host agent or bridge; the Skill remains decoupled from the input channel.
 - Automatically syncing every local note is not a planned default; sync follows user intent.
 - The repository will never host a user's OAuth app credentials or access tokens.
 - All compatible clients share one canonical Skill; the installer only copies it to each client directory.

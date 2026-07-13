@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 - 2026-07-13
+
+- Expanded the English and Simplified Chinese READMEs with the creator's real fragmented-idea and voice-capture workflow, the reason for building the Skill, and clearer usage scenarios.
+- Distinguished the current local-first Dida365 implementation from future WeChat/voice bridges, additional connectors, deterministic merging, and background two-way synchronization.
+- Clarified that local records are the current capture and audit foundation, while a complete cross-platform source-of-truth and reconciliation layer remains future work.
+- Added the same origin story and host-integration boundaries to the canonical Skill package so GitHub and Xiaohongshu SkillHub receive aligned public guidance.
+
 ## 1.0.0 - 2026-07-13
 
 - Aligned GitHub and Xiaohongshu SkillHub on the same `1.0.0` release version.

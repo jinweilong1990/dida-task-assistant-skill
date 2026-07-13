@@ -7,6 +7,14 @@ description: Manage Dida365 tasks while preserving a local-first record of tasks
 
 Treat the local record as the primary capture layer and Dida365 as the task-execution connector. Do not describe this as a background two-way sync service.
 
+## Product intent and boundaries
+
+- Treat fragmented thoughts from Dida365, Feishu, phone notes, and chat as one natural-language capture stream. Preserve the original thought locally before deciding whether it becomes an action.
+- Turn explicit actions into tasks or reminders; keep ideas and background facts as local notes unless the user requests follow-up work.
+- Accept input from Codex, Claude Code, or another compatible local Agent Skills client. Also accept text transcribed by an upstream WeChat or voice workflow.
+- Never imply that this package includes a WeChat bot, WorkBuddy/Claw bridge, or speech recognition. Treat those as host integrations.
+- Describe additional connectors, continuous remote polling, conflict reconciliation, deterministic global merging, and background two-way synchronization as future directions, not shipped capabilities.
+
 Resolve `SKILL_DIR` as the absolute directory containing this `SKILL.md`. Use absolute paths derived from `SKILL_DIR` when running bundled scripts; do not assume the current working directory is the Skill directory. The command examples use POSIX shell notation; adapt path quoting to the host shell when necessary.
 
 ## First use
