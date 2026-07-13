@@ -4,15 +4,21 @@ This ledger maps the canonical Skill source to its GitHub and Xiaohongshu SkillH
 
 ## 1.0.1 - 2026-07-13
 
-- Status: incomplete; Xiaohongshu SkillHub rejected the version submission, so GitHub publishing is intentionally pending
+- Status: submitted to Xiaohongshu SkillHub under a replacement platform identifier; GitHub publishing pending receipt commit
 - Release source commit: `864dcf753d863e438cdc4fe8629548ab91d8074e`
 - Canonical source: `dida-task-assistant/`
 - GitHub tag: `v1.0.1` (not created)
 - GitHub Release: not created
 - SkillHub display name: `滴答清单任务助手`
-- SkillHub Skill ID: `dida-task-assistant`
-- Intended SkillHub version: `1.0.1`
-- Existing SkillHub `skill_id`: `8647`
+- SkillHub Skill ID: `senmu-dida-task-assistant`
+- SkillHub version: `1.0.1`
+- SkillHub `skill_id`: `8675`
+- SkillHub `version_id`: `10283`
+- SkillHub audit request ID: `8675_10283_1783928703151`
+- SkillHub submission status: `submitted` (`first_version=true`, `display_status=1`)
+- SkillHub bundle SHA-256: `c85ee1d77fb915571cd0131174e639a3870a8fc9756d5defbf55826373fe960c`
+- Replacement reason: the original `dida-task-assistant` platform identifier remained reserved after the old listing was deleted, so the user approved creating a new listing with `senmu-dida-task-assistant`
+- Previous SkillHub `skill_id`: `8647` (old listing deleted by the user)
 - Submission result: `SUBMIT_REJECTED` (`Skill ID 已被占用`)
 - Attempted SkillHub bundle SHA-256: `096258261f21c2cf2a382a28e348ce44796c1a0b71aebffac020ed11fe8f0ca2`
 - Retry result after reinstalling the official package from `https://redskill.xiaohongshu.net/uploader.md`: `SUBMIT_REJECTED` (`Skill ID 已被占用`)
@@ -21,7 +27,6 @@ This ledger maps the canonical Skill source to its GitHub and Xiaohongshu SkillH
 - Retry after the user deleted the old SkillHub listing: `SUBMIT_REJECTED` (`Skill ID 已被占用`); the deleted listing had not released the identifier at submission time
 - Post-deletion retry bundle SHA-256: `2e4e1ca1df3429f78a3d618728274826e1386f81538621e1cfd758648babb188`
 - Canonical source fingerprint: `f28f84f02bc4854580854afdcc56b71eb3ae4bd1552a1eaf9d4d753ff06332a2`
-- Retry condition: use an official SkillHub CLI or documented flow that supports adding a version to the existing `skill_id=8647`; do not create a second identifier
 
 ## 1.0.0 - 2026-07-13
 
