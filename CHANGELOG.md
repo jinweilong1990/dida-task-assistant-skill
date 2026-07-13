@@ -6,6 +6,7 @@
 - Distinguished the current local-first Dida365 implementation from future WeChat/voice bridges, additional connectors, deterministic merging, and background two-way synchronization.
 - Clarified that local records are the current capture and audit foundation, while a complete cross-platform source-of-truth and reconciliation layer remains future work.
 - Added the same origin story and host-integration boundaries to the canonical Skill package so GitHub and Xiaohongshu SkillHub receive aligned public guidance.
+- Re-published the SkillHub listing under the permanent platform identifier `senmu-dida-task-assistant` after the deleted legacy listing retained the original identifier.
 
 ## 1.0.0 - 2026-07-13
 

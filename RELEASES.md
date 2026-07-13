@@ -4,11 +4,11 @@ This ledger maps the canonical Skill source to its GitHub and Xiaohongshu SkillH
 
 ## 1.0.1 - 2026-07-13
 
-- Status: submitted to Xiaohongshu SkillHub under a replacement platform identifier; GitHub publishing pending receipt commit
+- Status: published to GitHub; submitted to Xiaohongshu SkillHub for review under the replacement platform identifier
 - Release source commit: `864dcf753d863e438cdc4fe8629548ab91d8074e`
 - Canonical source: `dida-task-assistant/`
-- GitHub tag: `v1.0.1` (not created)
-- GitHub Release: not created
+- GitHub tag: `v1.0.1`
+- GitHub Release: `https://github.com/jinweilong1990/dida-task-assistant-skill/releases/tag/v1.0.1`
 - SkillHub display name: `滴答清单任务助手`
 - SkillHub Skill ID: `senmu-dida-task-assistant`
 - SkillHub version: `1.0.1`

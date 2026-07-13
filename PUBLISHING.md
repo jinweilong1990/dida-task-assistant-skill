@@ -31,7 +31,7 @@ This repository uses one canonical release source: `dida-task-assistant/`. GitHu
    ```bash
    skillhub-upload publish "$PWD/dida-task-assistant" --dry-run --agent \
      --version "$(cat VERSION)" \
-     --identifier dida-task-assistant \
+     --identifier senmu-dida-task-assistant \
      --name "滴答清单任务助手" \
      --source original \
      --tag "<confirmed live tag names>"
@@ -42,6 +42,8 @@ This repository uses one canonical release source: `dida-task-assistant/`. GitHu
 8. Commit the receipt-only update. The canonical Skill directory must remain unchanged.
 9. Push `main`, create and push `v<VERSION>`, and create the matching GitHub Release.
 10. Verify the GitHub tag, GitHub Release, SkillHub version, clean worktree, and recorded source fingerprint before reporting completion.
+
+The canonical package and installed Skill name remain `dida-task-assistant`. The Xiaohongshu SkillHub platform identifier is `senmu-dida-task-assistant`; keep this identifier unchanged for all future SkillHub versions. The original platform identifier `dida-task-assistant` remained reserved after its old listing was deleted and must not be reused.
 
 ## Version mismatch response
 
