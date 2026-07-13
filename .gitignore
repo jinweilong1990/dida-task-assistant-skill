@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Local development configuration and user records
+.env
+.env.*
+config.json
+records.json
+events.jsonl
+inbox.md
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/
