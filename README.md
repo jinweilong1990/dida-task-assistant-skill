@@ -108,7 +108,7 @@ You can always override the default with phrases such as “local only,” “al
 
 ## This is not a background agent
 
-Interpretation, classification, duplicate suggestions, and tag suggestions come from the **current AI agent plus the workflow in `SKILL.md`**. `agents/openai.yaml` is optional Codex UI metadata. Claude Code and other clients can ignore it; it does not launch a persistent bot.
+Interpretation, classification, duplicate suggestions, and tag suggestions come from the **current AI agent plus the workflow in `SKILL.md`**. The canonical package does not launch a persistent bot or depend on client-specific UI metadata.
 
 The bundled scripts perform two deterministic jobs: local record storage and Dida365 Open API calls. This division provides natural-language understanding without locking the user's records into one third-party service.
 
@@ -274,7 +274,6 @@ All scripts return JSON so compatible AI agents can reliably read IDs and contin
 ├── install.py                 # Cross-client installer
 ├── dida-task-assistant/       # Canonical portable Agent Skill
 │   ├── SKILL.md               # Workflow for compatible AI agents
-│   ├── agents/openai.yaml     # Optional Codex UI metadata
 │   ├── references/            # On-demand OAuth reference
 │   └── scripts/               # Local records, OAuth, and Dida365 CLI
 └── tests/                     # Regression tests that do not access a real account

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 - 2026-07-13
+
+- Removed optional Codex-only UI metadata from the canonical Skill package for SkillHub compatibility.
+- Kept one platform-neutral package based on `SKILL.md`, `scripts/`, and `references/` for all compatible clients.
+
 ## 0.1.2 - 2026-07-13
 
 - Added complete English and Simplified Chinese project guides.

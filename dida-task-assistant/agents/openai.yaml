@@ -1,4 +1,0 @@
-interface:
-  display_name: "滴答任务助手"
-  short_description: "本地优先理解想法和任务，并智能同步到滴答清单"
-  default_prompt: "Use $dida-task-assistant to capture this thought locally and sync any actionable follow-up to Dida365."
