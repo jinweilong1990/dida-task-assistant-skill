@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 2026-07-13
+
+- Reorganized the GitHub README around a five-minute first-use tutorial.
+- Added natural-language prompt recipes, common use cases, routing expectations, and a complete walkthrough.
+- Added an onboarding and credential-safety FAQ that clarifies installation, first authorization, and local-only use.
+
 ## 0.1.0 - 2026-07-13
 
 - Rebuilt the original Dida365 CLI as a credential-safe public Codex Skill.
